@@ -9,9 +9,12 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-192.png">
+<script>try{var t=localStorage.getItem("pk-tema");if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
 <title>PaKdiL AI · Eğitim Alanı</title>
 <style>
-:root{--bg:#0a0a0c;--s1:#131317;--s2:#1b1b21;--line:#2a2a33;--tx:#f4f1ea;--mut:#a09da8;--gold:#d4af6a;--gold2:#a9854a;--red:#c8102e}
+:root{--bg:#0a0a0c;--s1:#131317;--s2:#1b1b21;--line:#2a2a33;--tx:#f4f1ea;--mut:#a09da8;--gold:#d4af6a;--gold2:#a9854a;--red:#c8102e;--c1:#16161b;--c2:#0f0f13;--inp:#0a0a0d;--topbg:rgba(10,10,12,.88);--sh:#fff3c4}
+:root[data-theme=light]{--bg:#f6f1e7;--s1:#fff;--s2:#f0e9d9;--line:#e1d7c0;--tx:#1d1a14;--mut:#6b6556;--gold:#9a7424;--gold2:#8a6420;--c1:#fff;--c2:#fbf7ee;--inp:#faf6ec;--topbg:rgba(246,241,231,.9);--sh:#c9962f}
+[data-theme=light] .it.done .ic{color:#fff}[data-theme=light] .b.wa{border-color:#168a45;color:#168a45}[data-theme=light] .msg{color:#c0182f}[data-theme=light] .b.outb{color:#c0182f}[data-theme=light] .card,[data-theme=light] .pkw{box-shadow:0 10px 40px rgba(120,90,30,.12)}
 *{box-sizing:border-box;margin:0}
 html{-webkit-text-size-adjust:100%}
 body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--tx);min-height:100dvh;line-height:1.6;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
@@ -19,7 +22,10 @@ body::before{content:"";position:fixed;inset:0;pointer-events:none;background:ra
 button,input{font:inherit}a{color:var(--gold)}[hidden]{display:none!important}
 .b{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;border:1px solid var(--line);background:var(--s2);color:var(--tx);padding:10px 18px;border-radius:12px;cursor:pointer;text-decoration:none;font-size:.92rem;transition:.2s}
 .b:hover{border-color:var(--gold);color:var(--gold)}
-.b.g{background:linear-gradient(135deg,#e6c984,var(--gold2));color:#1a1306;border:0;font-weight:700}.b.g:hover{filter:brightness(1.08);color:#1a1306}
+.b.g{background:linear-gradient(135deg,#e6c984,#c29a4c);color:#1a1306;border:0;font-weight:700}.b.g:hover{filter:brightness(1.08);color:#1a1306}
+.b.home{border-color:rgba(212,175,106,.55);color:var(--gold);background:rgba(212,175,106,.1)}.b.home:hover{background:rgba(212,175,106,.2)}
+.b.outb{border-color:rgba(200,16,46,.6);color:#ff6b80;background:rgba(200,16,46,.1)}.b.outb:hover{background:rgba(200,16,46,.2);color:#ff8a9a}
+.thm{min-width:44px;padding:10px;font-size:1.05rem}.tgl{position:fixed;top:calc(14px + env(safe-area-inset-top));right:14px;z-index:30}
 .b.wa{border-color:#25d366;color:#7ee2a0}
 /* açılış / giriş */
 .splash,.lg{position:relative;min-height:100dvh;display:grid;place-items:center;padding:28px 18px}
@@ -27,20 +33,20 @@ button,input{font:inherit}a{color:var(--gold)}[hidden]{display:none!important}
 @keyframes sp{to{transform:rotate(360deg)}}
 .splash p{color:var(--mut);text-align:center;letter-spacing:.5px}
 .frame{position:relative;width:min(100%,440px);border-radius:24px;padding:2px;background:linear-gradient(145deg,rgba(212,175,106,.7),rgba(212,175,106,.12) 40%,rgba(212,175,106,.55));box-shadow:0 40px 90px rgba(0,0,0,.6),0 0 60px rgba(212,175,106,.08)}
-.frame::after{content:"";position:absolute;inset:0;border-radius:24px;padding:2.5px;background:linear-gradient(105deg,transparent 38%,#fff3c4 50%,transparent 62%) 160% 0/250% 100% no-repeat;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:shine 4.5s ease-in-out infinite;pointer-events:none}
+.frame::after{content:"";position:absolute;inset:0;border-radius:24px;padding:2.5px;background:linear-gradient(105deg,transparent 38%,var(--sh) 50%,transparent 62%) 160% 0/250% 100% no-repeat;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:shine 4.5s ease-in-out infinite;pointer-events:none}
 @keyframes shine{0%{background-position:160% 0}55%,100%{background-position:-60% 0}}
-.card{background:linear-gradient(180deg,#16161b,#0f0f13);border-radius:22px;padding:44px 32px 34px}
+.card{background:linear-gradient(180deg,var(--c1),var(--c2));border-radius:22px;padding:44px 32px 34px}
 .logo{text-align:center;font-size:1.7rem;font-weight:800;letter-spacing:.5px}.logo b{color:var(--red)}
 .tag{text-align:center;color:var(--gold);font-size:.72rem;letter-spacing:3px;text-transform:uppercase;margin:4px 0 6px}
 .ln{height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:18px 0 24px}
 .card p.s{color:var(--mut);text-align:center;font-size:.95rem;margin-bottom:22px}
-.card input{width:100%;min-height:54px;padding:14px 16px;margin-bottom:14px;background:#0a0a0d;border:1px solid var(--line);border-radius:14px;color:var(--tx);font-size:16px}
+.card input{width:100%;min-height:54px;padding:14px 16px;margin-bottom:14px;background:var(--inp);border:1px solid var(--line);border-radius:14px;color:var(--tx);font-size:16px}
 .card input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 4px rgba(212,175,106,.12)}
 .card .b.g{width:100%;min-height:54px;font-size:1rem;margin-top:6px}
 .msg{color:#ff8a9a;min-height:22px;font-size:.88rem;text-align:center;margin-top:12px}
 .lk{text-align:center;color:var(--mut);font-size:.88rem;margin-top:18px}
 /* uygulama */
-.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:10px;padding:14px 22px;background:rgba(10,10,12,.88);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:10px;padding:14px 22px;background:var(--topbg);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
 .brand{font-weight:800}.brand b{color:var(--red)}.brand small{display:block;color:var(--gold);font-weight:600;font-size:.66rem;letter-spacing:2px;text-transform:uppercase}
 .sp{flex:1}
 .wrap{position:relative;max-width:1180px;margin:0 auto;padding:40px 22px 80px}
@@ -66,23 +72,31 @@ button,input{font:inherit}a{color:var(--gold)}[hidden]{display:none!important}
 .rg{width:18px;height:18px;border-radius:50%;border:2.5px solid rgba(26,19,6,.25);border-top-color:#1a1306;animation:sp .8s linear infinite}
 .b.ld{pointer-events:none}
 .gf{position:relative}
-.gf::after{content:"";position:absolute;inset:0;border-radius:inherit;padding:2px;background:linear-gradient(105deg,transparent 38%,#fff3c4 50%,transparent 62%) 160% 0/250% 100% no-repeat;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:shine 10s ease-in-out infinite;animation-delay:var(--d,0s);pointer-events:none}
-.pkw{margin-bottom:20px;border-radius:22px;background:linear-gradient(180deg,#16161b,#0f0f13);border:1px solid rgba(212,175,106,.28)}
-.pkc{display:flex;gap:18px;align-items:center;width:100%;text-align:left;background:none;border:0;color:var(--tx);padding:18px;cursor:pointer;border-radius:22px}
-.pkc img,.pkc .ph{flex:none;width:96px;height:96px;border-radius:16px;object-fit:cover;background:var(--s2);display:grid;place-items:center;font-size:2.3rem;color:var(--gold);border:1px solid var(--line)}
-.pkc .tx{flex:1;min-width:0}.pkc strong{display:block;line-height:1.35;font-size:1.08rem;word-break:break-word}.pkc small{color:var(--mut)}
-.chev{flex:none;color:var(--gold);font-size:1.3rem;transition:.25s}.pkw.open .chev{transform:rotate(180deg)}
+.gf::after{content:"";position:absolute;inset:0;border-radius:inherit;padding:2px;background:linear-gradient(105deg,transparent 38%,var(--sh) 50%,transparent 62%) 160% 0/250% 100% no-repeat;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:shine 10s ease-in-out infinite;animation-delay:var(--d,0s);pointer-events:none}
+.pkw{margin-bottom:20px;border-radius:22px;background:linear-gradient(180deg,var(--c1),var(--c2));border:1px solid rgba(212,175,106,.28)}
+.pkc{display:block;width:100%;text-align:left;background:none;border:0;color:var(--tx);padding:0;cursor:pointer;border-radius:22px}
+.pbar{display:flex;gap:14px;align-items:center;padding:18px 20px}
+.pimg img{display:block;width:100%;height:auto;border-radius:22px 22px 0 0}.pimg .ph{height:150px;border-radius:22px 22px 0 0;background:var(--s2);display:grid;place-items:center;font-size:3rem;color:var(--gold)}
+.pkc .tx{flex:1;min-width:0}.pkc strong{display:block;line-height:1.35;font-size:1.12rem;word-break:break-word}.pkc small{color:var(--mut)}
+.chev{flex:none;display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:999px;background:linear-gradient(135deg,#e6c984,#c29a4c);color:#1a1306;font-weight:700;font-size:.88rem;box-shadow:0 4px 16px rgba(212,175,106,.35)}.chev i{font-style:normal;font-size:1.1rem;transition:.25s}.pkw.open .chev i{transform:rotate(180deg)}
 .pn{padding:4px 18px 22px}
 .cols{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:22px}
 .cols.one{grid-template-columns:1fr}
 .grp h3{font-size:.8rem;letter-spacing:2px;text-transform:uppercase;color:var(--gold);padding:0 6px 8px;border-bottom:1px solid var(--line)}
 .grp h3 small{color:var(--mut);letter-spacing:0}
 .pn .it{text-decoration:none}
-@media(max-width:860px){.cols{grid-template-columns:1fr}.top{padding:12px 16px}.wrap{padding:30px 16px 70px}.card{padding:40px 24px 30px}.pkc{padding:14px;gap:14px}.pkc img,.pkc .ph{width:76px;height:76px}.pn{padding:2px 12px 18px}.info .b{width:100%}.cont .b{flex:1}.top .b{padding:10px 14px}}
+@media(max-width:860px){.cols{grid-template-columns:1fr}.top{padding:12px 16px}.wrap{padding:30px 16px 70px}.card{padding:40px 24px 30px}.pbar{padding:14px;flex-wrap:wrap}.chev{width:100%;justify-content:center}.pn{padding:2px 12px 18px}.info .b{width:100%}.cont .b{flex:1}.top .b{padding:10px 14px}}
+#vApp{min-height:100dvh;display:flex;flex-direction:column}#vApp .wrap{flex:1;width:100%}
+.ftr{position:relative;flex:none;height:240px;margin-top:10px;overflow:hidden}
+.ftr canvas{position:absolute;inset:0;width:100%;height:100%;-webkit-mask:linear-gradient(transparent,#000 45%);mask:linear-gradient(transparent,#000 45%)}
+.ft-tx{position:absolute;left:0;right:0;bottom:calc(20px + env(safe-area-inset-bottom));text-align:center;z-index:2}
+.ft-tx b{display:block;letter-spacing:1px}.ft-tx b i{font-style:normal;color:var(--red)}
+.ft-tx span{color:var(--gold);font-size:.74rem;letter-spacing:3px;text-transform:uppercase}
 </style>
 </head>
 <body>
 <div id="vLogin" class="lg">
+  <button class="b thm tgl" aria-label="Aydınlık / karanlık tema"></button>
   <div class="frame"><div class="card">
     <div class="logo">PaKdiL <b>AI</b></div><div class="tag">Eğitim Alanı</div><div class="ln"></div>
     <p class="s">Ana sitedeki kullanıcı adın veya e-postanla giriş yap.</p>
@@ -97,15 +111,17 @@ button,input{font:inherit}a{color:var(--gold)}[hidden]{display:none!important}
 <div id="vApp" hidden>
   <header class="top">
     <div class="brand">PaKdiL <b>AI</b><small>Eğitim Alanı</small></div><div class="sp"></div>
-    <a class="b" href="https://pakdil-arapca.github.io/pakdil.arapca/">Ana site</a>
-    <button class="b" id="out">Çıkış</button>
+    <button class="b thm" aria-label="Aydınlık / karanlık tema"></button>
+    <a class="b home" href="https://pakdil-arapca.github.io/pakdil.arapca/">Ana site</a>
+    <button class="b outb" id="out">Çıkış</button>
   </header>
   <main class="wrap">
-    <div class="hero"><h1>Hoş geldin<span id="nm"></span></h1><p id="sub"></p><div class="cont" id="cont"></div></div>
+    <div class="hero"><h1>Hoş geldin<span id="nm"></span></h1><p id="sub"></p></div>
     <div class="pks" id="pk"></div>
     <div id="body"></div>
     <div class="help" id="help"></div>
   </main>
+  <footer class="ftr"><canvas id="fx" aria-hidden="true"></canvas><div class="ft-tx"><b>PaKdiL <i>AI</i></b><span>Eğitim Alanı</span></div></footer>
 </div>
 
 <script type="module">
@@ -115,15 +131,18 @@ import {getFirestore,doc,getDoc,setDoc,collection,query,where,getDocs} from "htt
 const app=initializeApp({apiKey:"AIzaSyCGoResXYR7G_Eleo7uAPGtwi4lfMK7j0U",authDomain:"pakdil-arapca.firebaseapp.com",projectId:"pakdil-arapca",storageBucket:"pakdil-arapca.firebasestorage.app",messagingSenderId:"742864186684",appId:"1:742864186684:web:3139c7b7219d81992b8239"});
 const auth=getAuth(app),db=getFirestore(app);auth.languageCode='tr';
 const $=s=>document.querySelector(s);
+const setTheme=t=>{document.documentElement.dataset.theme=t;try{localStorage.setItem('pk-tema',t)}catch(e){}document.querySelectorAll('.thm').forEach(b=>b.textContent=t==='light'?'🌙':'☀️');document.querySelector('meta[name=theme-color]').content=t==='light'?'#f6f1e7':'#0a0a0c'};
+document.querySelectorAll('.thm').forEach(b=>b.onclick=()=>setTheme(document.documentElement.dataset.theme==='light'?'dark':'light'));
+setTheme(document.documentElement.dataset.theme==='light'?'light':'dark');
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const hs=s=>{let x=5381;for(const c of s)x=((x*33)^c.charCodeAt(0))>>>0;return x.toString(36)};
-let uid='',pkgs=[],cur=null,sel=null,done=new Set(),seen=new Set(),wa='';
+let lastP='',lastD='',uid='',pkgs=[],cur=null,sel=null,done=new Set(),seen=new Set(),wa='';
 const kk=(p,i)=>hs(p.id+'|'+i.u);
 
 /* ilerleme: hesapta (users/{uid}) + bu cihazda yedek */
 const lsKey=()=>'pk-ilerleme2-'+uid;
 function save(){
-  const v={done:[...done],seen:[...seen]};
+  const v={done:[...done],seen:[...seen],son:cur||'',sd:sel||''};
   try{localStorage.setItem(lsKey(),JSON.stringify(v))}catch(e){}
   setDoc(doc(db,'users',uid),{egitimIlerleme:v},{merge:true}).catch(()=>{});
 }
@@ -170,7 +189,7 @@ onAuthStateChanged(auth,async u=>{
     $('#nm').textContent=ad?', '+String(ad).split(' ')[0]:'';
     let pr=dd.egitimIlerleme;
     if(!pr){try{pr=JSON.parse(localStorage.getItem(lsKey())||'null')}catch(e){}}
-    if(pr){done=new Set(pr.done||[]);seen=new Set(pr.seen||[])}else first=true;
+    if(pr){done=new Set(pr.done||[]);seen=new Set(pr.seen||[]);lastP=pr.son||'';lastD=pr.sd||''}else first=true;
     const s=await getDocs(query(collection(db,'orders'),where('uid','==',uid)));
     const map={};
     s.docs.map(d=>d.data()).filter(o=>o.durum==='onaylandı').forEach(o=>(o.kalemler||[]).forEach(k=>{
@@ -181,7 +200,8 @@ onAuthStateChanged(auth,async u=>{
     getDoc(doc(db,'settings','payment')).then(x=>{if(x.exists()){wa=String(x.data().wa||'').replace(/\D/g,'');$('#help').innerHTML=wa?`<a class="b wa" href="https://wa.me/${wa}" target="_blank" rel="noopener">WhatsApp'tan soru sor</a>`:''}}).catch(()=>{});
   }catch(e){pkgs=[];$('#sub').textContent='Veriler okunamadı. Sayfayı yenile.'}
   if(first){pkgs.forEach(p=>p.items.forEach(i=>seen.add(kk(p,i))));save()}
-  cur=null;sel=null;
+  cur=pkgs.some(p=>p.id===lastP)?lastP:(pkgs.length===1?pkgs[0].id:null);sel=null;
+  if(cur){const p=pkgs.find(x=>x.id===cur);sel=vids(p).some(x=>x.id===lastD)?lastD:firstVid(p)}
   await new Promise(r=>setTimeout(r,Math.max(0,1700-(Date.now()-t0))));
   $('#vLogin').hidden=true;$('#vApp').hidden=false;draw();
 });
@@ -189,7 +209,7 @@ onAuthStateChanged(auth,async u=>{
 const pct=p=>p.items.length?Math.round(p.items.filter(i=>done.has(kk(p,i))).length/p.items.length*100):0;
 const vids=p=>p.items.filter(x=>x.tur!=='pdf'),pdfs=p=>p.items.filter(x=>x.tur==='pdf');
 const firstVid=p=>{const v=vids(p);return (v.find(x=>!done.has(kk(p,x)))||v[0]||{}).id||null};
-const openPk=(pid,iid)=>{cur=pid;const p=pkgs.find(x=>x.id===pid);sel=iid||firstVid(p);draw();setTimeout(()=>{const e=document.querySelector('.pkw.open');e&&e.scrollIntoView({behavior:'smooth',block:'start'})},60)};
+const openPk=(pid,iid)=>{cur=pid;const p=pkgs.find(x=>x.id===pid);sel=iid||firstVid(p);save();draw();setTimeout(()=>{const e=document.querySelector('.pkw.open');e&&e.scrollIntoView({behavior:'smooth',block:'start'})},60)};
 
 function rows(p,arr,isPdf){
   let last='';
@@ -218,29 +238,60 @@ function panel(p){
 
 function draw(){
   if(!pkgs.length){
-    $('#pk').innerHTML='';$('#sub').textContent='';$('#cont').innerHTML='';
+    $('#pk').innerHTML='';$('#sub').textContent='';
     $('#body').innerHTML='<div class="empty"><p style="font-size:2.4rem">🔒</p><p style="margin:10px 0 18px">Onaylanmış bir paketin yok. Siparişin onaylanınca dersler burada açılır.</p><a class="b g" href="https://pakdil-arapca.github.io/pakdil.arapca/">Ana siteye git</a></div>';
     return;
   }
   $('#body').innerHTML='';
   $('#sub').textContent=pkgs.length+' paketin açık. Bir pakete dokunup içeriğini aç.';
-  let nx=null;for(const p of pkgs){const i=p.items.find(x=>!done.has(kk(p,x)));if(i){nx={p,i};break}}
-  $('#cont').innerHTML=nx?`<button class="b g" id="cn">▶ Kaldığın yerden devam et</button>`:'';
-  if(nx)$('#cn').onclick=()=>openPk(nx.p.id,nx.i.tur==='pdf'?null:nx.i.id);
-  $('#pk').innerHTML=pkgs.map((p,n)=>`<div class="pkw gf ${p.id===cur?'open':''}" style="--d:${-n*3.3}s"><button class="pkc" data-id="${esc(p.id)}" aria-expanded="${p.id===cur}">${p.img?`<img src="${esc(p.img)}" alt="" loading="lazy">`:'<div class="ph">ع</div>'}<div class="tx"><strong>${esc(p.baslik)}</strong><small>${p.items.length} içerik · %${pct(p)} tamamlandı</small><div class="bar"><i style="width:${pct(p)}%"></i></div></div><span class="chev">▾</span></button>${p.id===cur?panel(p):''}</div>`).join('');
-  document.querySelectorAll('.pkc').forEach(b=>b.onclick=()=>{if(cur===b.dataset.id){cur=null;sel=null;draw()}else openPk(b.dataset.id)});
+  $('#pk').innerHTML=pkgs.map((p,n)=>`<div class="pkw gf ${p.id===cur?'open':''}" style="--d:${-n*3.3}s"><button class="pkc" data-id="${esc(p.id)}" aria-expanded="${p.id===cur}"><div class="pimg">${p.img?`<img src="${esc(p.img)}" alt="${esc(p.baslik)}" loading="lazy">`:'<div class="ph">ع</div>'}</div><div class="pbar"><div class="tx"><strong>${esc(p.baslik)}</strong><small>${p.items.length} içerik · %${pct(p)} tamamlandı</small><div class="bar"><i style="width:${pct(p)}%"></i></div></div><span class="chev"><span>${p.id===cur?'Kapat':'İçeriği aç'}</span><i>▾</i></span></div></button>${p.id===cur?panel(p):''}</div>`).join('');
+  document.querySelectorAll('.pkc').forEach(b=>b.onclick=()=>{if(cur===b.dataset.id){cur=null;sel=null;save();draw()}else openPk(b.dataset.id)});
   const p=pkgs.find(x=>x.id===cur);if(!p)return;
   const v=vids(p),it=v.find(x=>x.id===sel);
   if(it&&!seen.has(kk(p,it))){seen.add(kk(p,it));save()}
-  document.querySelectorAll('.it[data-i]:not(.pdfr)').forEach(b=>b.onclick=()=>{sel=b.dataset.i;draw()});
+  document.querySelectorAll('.it[data-i]:not(.pdfr)').forEach(b=>b.onclick=()=>{sel=b.dataset.i;save();draw()});
   document.querySelectorAll('.pdfr').forEach(a=>a.addEventListener('click',()=>{const x=p.items.find(y=>y.id===a.dataset.i);done.add(kk(p,x));seen.add(kk(p,x));save();setTimeout(draw,50)}));
   const dn=$('#dn');if(dn&&it){
     const nxv=v[v.indexOf(it)+1];
-    const finish=()=>{done.add(kk(p,it));save();if(nxv){sel=nxv.id}draw()};
+    const finish=()=>{done.add(kk(p,it));if(nxv){sel=nxv.id}save();draw()};
     dn.onclick=()=>{if(done.has(kk(p,it))){done.delete(kk(p,it));save();draw()}else finish()};
     const vd=$('#vd');if(vd)vd.addEventListener('ended',()=>{if(!done.has(kk(p,it)))finish()});
   }
 }
+
+/* alt animasyon: akan altın dalgalar + süzülen Arapça harfler */
+(function(){
+const cv=$('#fx'),ft=$('.ftr'),cx=cv.getContext('2d');
+const L='عبتثجحخدذرزسشصضطظغفقكلمنهوي'.split('');
+const rnd=(a,b)=>a+Math.random()*(b-a);
+let W=0,H=0,ps=[],gold='212,175,106',run=false,last=0;
+const mk=init=>({c:L[Math.random()*L.length|0],x:rnd(0,W),y:init?rnd(0,H):H+30,s:rnd(18,38),v:rnd(.25,.6),a:rnd(.16,.36),ph:rnd(0,6.28),dr:rnd(.2,.6)});
+const col=()=>{const h=getComputedStyle(document.documentElement).getPropertyValue('--gold').trim().replace('#','');if(h.length===6)gold=[0,2,4].map(i=>parseInt(h.substr(i,2),16)).join(',')};
+function size(){const d=Math.min(devicePixelRatio||1,2);W=ft.clientWidth;H=ft.clientHeight;if(!W)return;cv.width=W*d;cv.height=H*d;cx.setTransform(d,0,0,d,0,0);ps=Array.from({length:Math.max(8,Math.round(W/75))},()=>mk(true));draw(0)}
+function draw(ts){
+  const t=ts/1000;cx.clearRect(0,0,W,H);
+  for(let k=0;k<4;k++){
+    const base=H*(.58+.09*k),amp=9+5*k,f=.0075-.0011*k,sp=.5+.18*k;
+    const g=cx.createLinearGradient(0,0,W,0);g.addColorStop(0,`rgba(${gold},0)`);g.addColorStop(.5,`rgba(${gold},${.5-.08*k})`);g.addColorStop(1,`rgba(${gold},0)`);
+    cx.strokeStyle=g;cx.lineWidth=1.3;cx.beginPath();
+    for(let x=0;x<=W;x+=6){const y=base+Math.sin(x*f+t*sp+k)*amp+Math.sin(x*f*2.3-t*sp*.7)*amp*.35;x?cx.lineTo(x,y):cx.moveTo(x,y)}
+    cx.stroke();
+  }
+  for(const p of ps){
+    p.y-=p.v;p.x+=Math.sin(t*p.dr+p.ph)*.25;
+    const life=(H+30-p.y)/(H+60);
+    if(life>=1||life<0){Object.assign(p,mk(false));continue}
+    cx.font=p.s+'px "Noto Naskh Arabic","Amiri",serif';cx.fillStyle=`rgba(${gold},${p.a*Math.sin(Math.PI*life)})`;cx.fillText(p.c,p.x,p.y);
+  }
+}
+function loop(ts){if(!run)return;requestAnimationFrame(loop);if(ts-last<33)return;last=ts;draw(ts)}
+const go=()=>{if(run||document.hidden||matchMedia('(prefers-reduced-motion:reduce)').matches)return;run=true;requestAnimationFrame(loop)};
+new IntersectionObserver(e=>{if(e[0].isIntersecting){col();go()}else run=false}).observe(ft);
+new ResizeObserver(size).observe(ft);
+document.addEventListener('visibilitychange',()=>{if(document.hidden)run=false;else if(ft.clientWidth)go()});
+document.querySelectorAll('.thm').forEach(b=>b.addEventListener('click',()=>setTimeout(col,60)));
+col();
+})();
 </script>
 </body>
 </html>
