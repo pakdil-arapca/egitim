@@ -25,7 +25,20 @@ button,input{font:inherit}a{color:var(--gold)}[hidden]{display:none!important}
 .b.g{background:linear-gradient(135deg,#e6c984,#c29a4c);color:#1a1306;border:0;font-weight:700}.b.g:hover{filter:brightness(1.08);color:#1a1306}
 .b.home{border-color:rgba(212,175,106,.55);color:var(--gold);background:rgba(212,175,106,.1)}.b.home:hover{background:rgba(212,175,106,.2)}
 .b.outb{border-color:rgba(200,16,46,.6);color:#ff6b80;background:rgba(200,16,46,.1)}.b.outb:hover{background:rgba(200,16,46,.2);color:#ff8a9a}
-.thm{min-width:44px;padding:10px;font-size:1.05rem}.tgl{position:fixed;top:calc(14px + env(safe-area-inset-top));right:14px;z-index:30}
+.lgw{width:min(100%,440px);display:flex;flex-direction:column;align-items:center;gap:16px}.lgw .frame{width:100%}
+.thm{flex:none;width:48px;height:48px;display:grid;place-items:center;background:none;border:0;padding:0;color:var(--gold);cursor:pointer;border-radius:50%;-webkit-tap-highlight-color:transparent}
+.thm:hover{color:var(--tx)}.thm svg{width:28px;height:28px;overflow:visible}
+.thm .sun,.thm .beams{transform-origin:center;transform-box:fill-box}
+.thm .sun{transition:transform .5s cubic-bezier(.5,1.25,.75,1.25)}.thm .beams{transition:transform .5s cubic-bezier(.5,1.5,.75,1.25),opacity .3s}
+.thm .mc{transition:transform .4s ease-out}
+:root:not([data-theme=light]) .thm .sun{transform:scale(1.7)}
+:root:not([data-theme=light]) .thm .beams{transform:rotate(-25deg) scale(.4);opacity:0}
+:root:not([data-theme=light]) .thm .mc{transform:translate(-7px,-3px)}
+@media(prefers-reduced-motion:reduce){.thm *{transition:none!important}}
+.screen[data-play]{position:relative;cursor:pointer;background-size:cover;background-position:center}
+.playb{width:78px;height:78px;border-radius:50%;border:0;background:linear-gradient(135deg,#e6c984,#c29a4c);color:#1a1306;font-size:1.8rem;padding-left:5px;box-shadow:0 10px 34px rgba(0,0,0,.55);pointer-events:none;transition:.2s}
+.screen[data-play]:hover .playb{transform:scale(1.07)}
+.pl{position:absolute;left:0;right:0;bottom:14px;text-align:center;color:#fff;font-size:.82rem;opacity:.85;text-shadow:0 1px 6px #000}
 .b.wa{border-color:#25d366;color:#7ee2a0}
 /* açılış / giriş */
 .splash,.lg{position:relative;min-height:100dvh;display:grid;place-items:center;padding:28px 18px}
@@ -90,13 +103,11 @@ button,input{font:inherit}a{color:var(--gold)}[hidden]{display:none!important}
 .ftr{position:relative;flex:none;height:240px;margin-top:10px;overflow:hidden}
 .ftr canvas{position:absolute;inset:0;width:100%;height:100%;-webkit-mask:linear-gradient(transparent,#000 45%);mask:linear-gradient(transparent,#000 45%)}
 .ft-tx{position:absolute;left:0;right:0;bottom:calc(20px + env(safe-area-inset-bottom));text-align:center;z-index:2}
-.ft-tx b{display:block;letter-spacing:1px}.ft-tx b i{font-style:normal;color:var(--red)}
-.ft-tx span{color:var(--gold);font-size:.74rem;letter-spacing:3px;text-transform:uppercase}
+.ft-tx span{color:var(--gold);font-size:.8rem;letter-spacing:.4px}
 </style>
 </head>
 <body>
-<div id="vLogin" class="lg">
-  <button class="b thm tgl" aria-label="Aydınlık / karanlık tema"></button>
+<div id="vLogin" class="lg"><div class="lgw">
   <div class="frame"><div class="card">
     <div class="logo">PaKdiL <b>AI</b></div><div class="tag">Eğitim Alanı</div><div class="ln"></div>
     <p class="s">Ana sitedeki kullanıcı adın veya e-postanla giriş yap.</p>
@@ -106,12 +117,13 @@ button,input{font:inherit}a{color:var(--gold)}[hidden]{display:none!important}
     <div class="msg" id="msg"></div>
     <div class="lk">Hesabın yok mu? <a href="https://pakdil-arapca.github.io/pakdil.arapca/">Ana siteden</a> paketini al.</div>
   </div></div>
-</div>
+  <button class="thm" aria-label="Aydınlık / karanlık tema" title="Tema"></button>
+</div></div>
 
 <div id="vApp" hidden>
   <header class="top">
     <div class="brand">PaKdiL <b>AI</b><small>Eğitim Alanı</small></div><div class="sp"></div>
-    <button class="b thm" aria-label="Aydınlık / karanlık tema"></button>
+    <button class="thm" aria-label="Aydınlık / karanlık tema" title="Tema"></button>
     <a class="b home" href="https://pakdil-arapca.github.io/pakdil.arapca/">Ana site</a>
     <button class="b outb" id="out">Çıkış</button>
   </header>
@@ -121,7 +133,7 @@ button,input{font:inherit}a{color:var(--gold)}[hidden]{display:none!important}
     <div id="body"></div>
     <div class="help" id="help"></div>
   </main>
-  <footer class="ftr"><canvas id="fx" aria-hidden="true"></canvas><div class="ft-tx"><b>PaKdiL <i>AI</i></b><span>Eğitim Alanı</span></div></footer>
+  <footer class="ftr"><canvas id="fx" aria-hidden="true"></canvas><div class="ft-tx"><span>© PaKdiL AI. Tüm hakları saklıdır.</span></div></footer>
 </div>
 
 <script type="module">
@@ -131,7 +143,8 @@ import {getFirestore,doc,getDoc,setDoc,collection,query,where,getDocs} from "htt
 const app=initializeApp({apiKey:"AIzaSyCGoResXYR7G_Eleo7uAPGtwi4lfMK7j0U",authDomain:"pakdil-arapca.firebaseapp.com",projectId:"pakdil-arapca",storageBucket:"pakdil-arapca.firebasestorage.app",messagingSenderId:"742864186684",appId:"1:742864186684:web:3139c7b7219d81992b8239"});
 const auth=getAuth(app),db=getFirestore(app);auth.languageCode='tr';
 const $=s=>document.querySelector(s);
-const setTheme=t=>{document.documentElement.dataset.theme=t;try{localStorage.setItem('pk-tema',t)}catch(e){}document.querySelectorAll('.thm').forEach(b=>b.textContent=t==='light'?'🌙':'☀️');document.querySelector('meta[name=theme-color]').content=t==='light'?'#f6f1e7':'#0a0a0c'};
+const setTheme=t=>{document.documentElement.dataset.theme=t;try{localStorage.setItem('pk-tema',t)}catch(e){}document.querySelector('meta[name=theme-color]').content=t==='light'?'#f6f1e7':'#0a0a0c'};
+document.querySelectorAll('.thm').forEach((b,n)=>{b.innerHTML=`<svg viewBox="0 0 24 24" aria-hidden="true"><mask id="mk${n}"><rect x="-4" y="-4" width="32" height="32" fill="#fff"/><circle class="mc" cx="24" cy="10" r="6" fill="#000"/></mask><circle class="sun" cx="12" cy="12" r="6" mask="url(#mk${n})" fill="currentColor"/><g class="beams" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></g></svg>`});
 document.querySelectorAll('.thm').forEach(b=>b.onclick=()=>setTheme(document.documentElement.dataset.theme==='light'?'dark':'light'));
 setTheme(document.documentElement.dataset.theme==='light'?'light':'dark');
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -227,9 +240,8 @@ function panel(p){
   if(!p.items.length)return '<div class="pn"><div class="empty" style="margin-top:6px;padding:40px 16px">Bu paketin dersleri yakında eklenecek.</div></div>';
   const it=v.find(x=>x.id===sel);let stage='';
   if(it){
-    let scr;
-    if(it.tur==='yt')scr=`<div class="screen"><iframe src="https://www.youtube-nocookie.com/embed/${esc(it.yt)}?rel=0&playsinline=1" allow="accelerometer;encrypted-media;picture-in-picture" allowfullscreen></iframe></div>`;
-    else scr=`<div class="screen"><video id="vd" controls playsinline preload="metadata" src="${esc(it.u)}"></video></div>`;
+    const th=it.tur==='yt'?`background-image:linear-gradient(rgba(0,0,0,.25),rgba(0,0,0,.45)),url(https://i.ytimg.com/vi/${esc(it.yt)}/hqdefault.jpg)`:'';
+    const scr=`<div class="screen" data-play="1" style="${th}"><button class="playb" aria-label="Videoyu oynat" tabindex="-1">▶</button><span class="pl">Oynatmak için dokun</span></div>`;
     const dn=done.has(kk(p,it));
     stage=`<div class="stage gf" style="--d:-4s">${scr}<div class="info"><h2>${esc(it.t)}</h2><button class="b ${dn?'':'g'}" id="dn">${dn?'Tamamlandı ✓':'Tamamlandı, sonraki video →'}</button></div></div>`;
   }
@@ -255,7 +267,10 @@ function draw(){
     const nxv=v[v.indexOf(it)+1];
     const finish=()=>{done.add(kk(p,it));if(nxv){sel=nxv.id}save();draw()};
     dn.onclick=()=>{if(done.has(kk(p,it))){done.delete(kk(p,it));save();draw()}else finish()};
-    const vd=$('#vd');if(vd)vd.addEventListener('ended',()=>{if(!done.has(kk(p,it)))finish()});
+    const sc=document.querySelector('.screen[data-play]');
+    if(sc)sc.onclick=()=>{sc.removeAttribute('data-play');sc.removeAttribute('style');
+      if(it.tur==='yt')sc.innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${esc(it.yt)}?rel=0&playsinline=1&autoplay=1" allow="autoplay;accelerometer;encrypted-media;picture-in-picture" allowfullscreen></iframe>`;
+      else{sc.innerHTML=`<video controls playsinline autoplay src="${esc(it.u)}"></video>`;sc.firstChild.addEventListener('ended',()=>{if(!done.has(kk(p,it)))finish()})}};
   }
 }
 
