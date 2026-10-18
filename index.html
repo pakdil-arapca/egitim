@@ -105,6 +105,7 @@ button,input{font:inherit}a{color:var(--gold)}[hidden]{display:none!important}
 .ftr canvas{position:absolute;inset:0;width:100%;height:100%;-webkit-mask:linear-gradient(transparent,#000 45%);mask:linear-gradient(transparent,#000 45%)}
 .ft-tx{position:absolute;left:0;right:0;bottom:calc(20px + env(safe-area-inset-bottom));text-align:center;z-index:2}
 .ft-tx span{color:var(--gold);font-size:.8rem;letter-spacing:.4px}
+.vg{margin-bottom:8px}.vg .sub{margin-left:30px;min-height:48px;border-left:2px solid var(--line);border-radius:0 12px 12px 0;text-decoration:none;color:var(--tx)}.vg .sub .ic{width:32px;height:32px}
 </style>
 </head>
 <body>
@@ -161,17 +162,21 @@ function save(){
   setDoc(doc(db,'users',uid),{egitimIlerleme:v},{merge:true}).catch(()=>{});
 }
 
-function parse(txt){
-  const out=[];let sec='';
-  String(txt||'').split(/\r?\n/).map(l=>l.trim()).filter(Boolean).forEach(l=>{
-    if(l[0]==='#'){sec=l.replace(/^#+\s*/,'');return}
-    let t='',u=l;const i=l.lastIndexOf('|');
-    if(i>-1){t=l.slice(0,i).trim();u=l.slice(i+1).trim()}
+const ytId=u=>{const m=u.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{11})/);return m&&m[1]};
+function mkItems(arr){
+  return (arr||[]).filter(v=>/^https?:\/\//i.test(v.u||'')).map((v,i)=>{
+    const yt=ytId(v.u),dr=v.u.match(/drive\.google\.com\/file\/d\/([\w-]+)/);
+    return {id:'v'+(i+1),t:v.t||'Ders '+(i+1),u:v.u,tur:yt?'yt':dr?'drive':'video',yt,dr:dr&&dr[1],
+      pdfs:(v.pdfs||[]).filter(q=>/^https?:\/\//i.test(q.u||'')).map((q,j)=>({id:'v'+(i+1)+'p'+(j+1),t:q.t||'PDF '+(j+1),u:q.u}))};
+  });
+}
+function legacy(txt){
+  const out=[];
+  String(txt||'').split(/\r?\n/).map(l=>l.trim()).filter(l=>l&&l[0]!=='#').forEach(l=>{
+    const k=l.lastIndexOf('|'),t=k>-1?l.slice(0,k).trim():'',u=(k>-1?l.slice(k+1):l).trim();
     if(!/^https?:\/\//i.test(u))return;
-    const n=out.length+1;
-    const yt=u.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{11})/);
-    const tur=yt?'yt':/\.(mp4|webm|mov)(\?|$)|firebasestorage|storage\.googleapis/i.test(u)?'video':'pdf';
-    out.push({id:'d'+n,t:t||'Ders '+n,u,tur,yt:yt&&yt[1],sec});
+    const vid=/youtu\.?be|\.(mp4|webm|mov)(\?|$)|firebasestorage|storage\.googleapis/i.test(u);
+    if(vid||!out.length)out.push(vid?{t,u,pdfs:[]}:{t:'',u:'',pdfs:[{t,u}]});else out[out.length-1].pdfs.push({t,u});
   });
   return out;
 }
@@ -209,8 +214,12 @@ onAuthStateChanged(auth,async u=>{
     s.docs.map(d=>d.data()).filter(o=>o.durum==='onaylandı').forEach(o=>(o.kalemler||[]).forEach(k=>{
       if(!map[k.id]||(!map[k.id].icerik&&k.icerik))map[k.id]=k;
     }));
-    pkgs=Object.values(map).map(k=>({id:k.id,baslik:k.baslik,items:parse(k.icerik),img:''}));
-    await Promise.all(pkgs.map(async p=>{try{const d=await getDoc(doc(db,'packages',p.id));p.img=((d.data()||{}).gorseller||[])[0]||''}catch(e){}}));
+    pkgs=Object.values(map).map(k=>({id:k.id,baslik:k.baslik,old:k.icerik||'',items:[],img:''}));
+    await Promise.all(pkgs.map(async p=>{
+      try{const d=await getDoc(doc(db,'packages',p.id));p.img=((d.data()||{}).gorseller||[])[0]||''}catch(e){}
+      try{const c=await getDoc(doc(db,'contents',p.id));if(c.exists()){const cd=c.data();p.items=mkItems(Array.isArray(cd.items)?cd.items:legacy(cd.link))}}catch(e){}
+      if(!p.items.length&&p.old)p.items=mkItems(legacy(p.old));
+    }));
     getDoc(doc(db,'settings','payment')).then(x=>{if(x.exists()){wa=String(x.data().wa||'').replace(/\D/g,'');$('#help').innerHTML=wa?`<a class="b wa" href="https://wa.me/${wa}" target="_blank" rel="noopener">WhatsApp'tan soru sor</a>`:''}}).catch(()=>{});
   }catch(e){pkgs=[];$('#sub').textContent='Veriler okunamadı. Sayfayı yenile.'}
   if(first){pkgs.forEach(p=>p.items.forEach(i=>seen.add(kk(p,i))));save()}
@@ -221,23 +230,21 @@ onAuthStateChanged(auth,async u=>{
 });
 
 const pct=p=>p.items.length?Math.round(p.items.filter(i=>done.has(kk(p,i))).length/p.items.length*100):0;
-const vids=p=>p.items.filter(x=>x.tur!=='pdf'),pdfs=p=>p.items.filter(x=>x.tur==='pdf');
+const vids=p=>p.items;
 const firstVid=p=>{const v=vids(p);return (v.find(x=>!done.has(kk(p,x)))||v[0]||{}).id||null};
 const openPk=(pid,iid)=>{cur=pid;const p=pkgs.find(x=>x.id===pid);sel=iid||firstVid(p);save();draw();setTimeout(()=>{const e=document.querySelector('.pkw.open');e&&e.scrollIntoView({behavior:'smooth',block:'start'})},60)};
 
-function rows(p,arr,isPdf){
-  let last='';
-  return arr.map(x=>{
-    const k=kk(p,x),h=x.sec&&x.sec!==last?`<div class="sec">${esc(x.sec)}</div>`:'';last=x.sec||last;
-    const nw=!seen.has(k)&&!done.has(k)?' <span class="nw">YENİ</span>':'';
-    const ic=done.has(k)?'✓':isPdf?'📄':'▶';
-    const inner=`<div class="ic">${ic}</div><span>${esc(x.t)}${nw}<br><small>${isPdf?'Aç / indir':'Video'}</small></span>`;
-    return h+(isPdf?`<a class="it pdfr ${done.has(k)?'done':''}" data-i="${x.id}" href="${esc(x.u)}" target="_blank" rel="noopener noreferrer">${inner}</a>`:`<button class="it ${x.id===sel?'on':''} ${done.has(k)?'done':''}" data-i="${x.id}">${inner}</button>`);
+function rows(p){
+  return p.items.map(x=>{
+    const k=kk(p,x),nw=!seen.has(k)&&!done.has(k)?' <span class="nw">YENİ</span>':'';
+    const vr=`<button class="it ${x.id===sel?'on':''} ${done.has(k)?'done':''}" data-i="${x.id}"><div class="ic">${done.has(k)?'✓':'▶'}</div><span>${esc(x.t)}${nw}<br><small>Video</small></span></button>`;
+    const pr=x.pdfs.map(q=>`<a class="it pdfr sub" data-p="${q.id}" href="${esc(q.u)}" target="_blank" rel="noopener noreferrer"><div class="ic">📄</div><span>${esc(q.t)}<br><small>PDF · aç / indir</small></span></a>`).join('');
+    return `<div class="vg">${vr}${pr}</div>`;
   }).join('');
 }
 
 function panel(p){
-  const v=vids(p),f=pdfs(p);
+  const v=p.items;
   if(!p.items.length)return '<div class="pn"><div class="empty" style="margin-top:6px;padding:40px 16px">Bu paketin dersleri yakında eklenecek.</div></div>';
   const it=v.find(x=>x.id===sel);let stage='';
   if(it){
@@ -246,7 +253,7 @@ function panel(p){
     const dn=done.has(kk(p,it));
     stage=`<div class="stage gf" style="--d:-4s">${scr}<div class="info"><h2>${esc(it.t)}</h2><button class="b ${dn?'':'g'}" id="dn">${dn?'Tamamlandı ✓':'Tamamlandı, sonraki video →'}</button></div></div>`;
   }
-  return `<div class="pn">${stage}<div class="cols ${v.length&&f.length?'':'one'}">${v.length?`<div class="grp"><h3>🎬 Videolar <small>(${v.length})</small></h3>${rows(p,v,false)}</div>`:''}${f.length?`<div class="grp"><h3>📄 PDF / Kaynaklar <small>(${f.length})</small></h3>${rows(p,f,true)}</div>`:''}</div></div>`;
+  return `<div class="pn">${stage}<div class="grp"><h3>🎬 Videolar <small>(${v.length})</small></h3>${rows(p)}</div></div>`;
 }
 
 function draw(){
@@ -257,13 +264,13 @@ function draw(){
   }
   $('#body').innerHTML='';
   $('#sub').textContent=pkgs.length+' paketin açık. Bir pakete dokunup içeriğini aç.';
-  $('#pk').innerHTML=pkgs.map((p,n)=>`<div class="pkw gf ${p.id===cur?'open':''}" style="--d:${-n*3.3}s"><button class="pkc" data-id="${esc(p.id)}" aria-expanded="${p.id===cur}"><div class="pimg">${p.img?`<img src="${esc(p.img)}" alt="${esc(p.baslik)}" loading="lazy">`:'<div class="ph">ع</div>'}</div><div class="pbar"><div class="tx"><strong>${esc(p.baslik)}</strong><small>${p.items.length} içerik · %${pct(p)} tamamlandı</small><div class="bar"><i style="width:${pct(p)}%"></i></div></div><span class="chev"><span>${p.id===cur?'Kapat':'İçeriği aç'}</span><i>▾</i></span></div></button>${p.id===cur?panel(p):''}</div>`).join('');
+  $('#pk').innerHTML=pkgs.map((p,n)=>`<div class="pkw gf ${p.id===cur?'open':''}" style="--d:${-n*3.3}s"><button class="pkc" data-id="${esc(p.id)}" aria-expanded="${p.id===cur}"><div class="pimg">${p.img?`<img src="${esc(p.img)}" alt="${esc(p.baslik)}" loading="lazy">`:'<div class="ph">ع</div>'}</div><div class="pbar"><div class="tx"><strong>${esc(p.baslik)}</strong><small>${p.items.length} video · ${p.items.reduce((n,v)=>n+v.pdfs.length,0)} PDF · %${pct(p)} tamamlandı</small><div class="bar"><i style="width:${pct(p)}%"></i></div></div><span class="chev"><span>${p.id===cur?'Kapat':'İçeriği aç'}</span><i>▾</i></span></div></button>${p.id===cur?panel(p):''}</div>`).join('');
   document.querySelectorAll('.pkc').forEach(b=>b.onclick=()=>{if(cur===b.dataset.id){cur=null;sel=null;save();draw()}else openPk(b.dataset.id)});
   const p=pkgs.find(x=>x.id===cur);if(!p)return;
   const v=vids(p),it=v.find(x=>x.id===sel);
   if(it&&!seen.has(kk(p,it))){seen.add(kk(p,it));save()}
   document.querySelectorAll('.it[data-i]:not(.pdfr)').forEach(b=>b.onclick=()=>{sel=b.dataset.i;save();draw()});
-  document.querySelectorAll('.pdfr').forEach(a=>a.addEventListener('click',()=>{const x=p.items.find(y=>y.id===a.dataset.i);done.add(kk(p,x));seen.add(kk(p,x));save();setTimeout(draw,50)}));
+  
   const dn=$('#dn');if(dn&&it){
     const nxv=v[v.indexOf(it)+1];
     const finish=()=>{done.add(kk(p,it));if(nxv){sel=nxv.id}save();draw()};
@@ -271,6 +278,7 @@ function draw(){
     const sc=document.querySelector('.screen[data-play]');
     if(sc)sc.onclick=()=>{sc.removeAttribute('data-play');sc.removeAttribute('style');
       if(it.tur==='yt')sc.innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${esc(it.yt)}?rel=0&playsinline=1&autoplay=1" allow="autoplay;accelerometer;encrypted-media;picture-in-picture" allowfullscreen></iframe>`;
+      else if(it.tur==='drive')sc.innerHTML=`<iframe src="https://drive.google.com/file/d/${esc(it.dr)}/preview" allow="autoplay" allowfullscreen></iframe>`;
       else{sc.innerHTML=`<video controls playsinline autoplay src="${esc(it.u)}"></video>`;sc.firstChild.addEventListener('ended',()=>{if(!done.has(kk(p,it)))finish()})}};
   }
 }
