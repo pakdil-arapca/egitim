@@ -152,7 +152,7 @@ document.querySelectorAll('.thm').forEach(b=>b.onclick=()=>setTheme(document.doc
 setTheme(document.documentElement.dataset.theme==='light'?'light':'dark');
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const hs=s=>{let x=5381;for(const c of s)x=((x*33)^c.charCodeAt(0))>>>0;return x.toString(36)};
-let lastP='',lastD='',uid='',pkgs=[],cur=null,sel=null,done=new Set(),seen=new Set(),wa='';
+const ADMIN_EMAIL='pakdilarapca@gmail.com';let adminMode=false,lastP='',lastD='',uid='',pkgs=[],cur=null,sel=null,done=new Set(),seen=new Set(),wa='';
 const kk=(p,i)=>hs(p.id+'|'+i.u);
 
 /* ilerleme: hesapta (users/{uid}) + bu cihazda yedek */
@@ -218,6 +218,8 @@ onAuthStateChanged(auth,async u=>{
     const er={};try{(await getDocs(collection(db,'users',uid,'erisim'))).docs.forEach(d=>er[d.id]=d.data())}catch(e){}
     pkgs=Object.values(map).map(k=>{const e=er[k.id],bt=e&&e.bitis&&e.bitis.toDate?e.bitis.toDate():null,now=new Date();
       return {id:k.id,baslik:k.baslik,old:k.icerik||'',items:[],img:'',bitis:bt,exp:!!(bt&&bt<=now),kalan:bt&&bt>now?Math.ceil((bt-now)/864e5):0}});
+    adminMode=u.email===ADMIN_EMAIL;
+    if(adminMode){const ps=await getDocs(collection(db,'packages'));pkgs=ps.docs.map(d=>({id:d.id,baslik:d.data().baslik||'Paket',old:'',items:[],img:(d.data().gorseller||[])[0]||'',bitis:null,exp:false,kalan:0}))}
     await Promise.all(pkgs.map(async p=>{
       try{const d=await getDoc(doc(db,'packages',p.id));p.img=((d.data()||{}).gorseller||[])[0]||''}catch(e){}
       if(p.exp)return;
@@ -268,7 +270,7 @@ function draw(){
     return;
   }
   $('#body').innerHTML='';
-  $('#sub').textContent=pkgs.length+' paketin açık. Bir pakete dokunup içeriğini aç.';
+  $('#sub').textContent=(adminMode?'Yönetici önizlemesi: tüm paketler açık görünür. ':'')+pkgs.length+' paketin açık. Bir pakete dokunup içeriğini aç.';
   $('#pk').innerHTML=pkgs.map((p,n)=>`<div class="pkw gf ${p.id===cur?'open':''}" style="--d:${-n*3.3}s"><button class="pkc" data-id="${esc(p.id)}" aria-expanded="${p.id===cur}"><div class="pimg">${p.img?`<img src="${esc(p.img)}" alt="${esc(p.baslik)}" loading="lazy">`:'<div class="ph">ع</div>'}</div><div class="pbar"><div class="tx"><strong>${esc(p.baslik)}</strong><small>${p.items.length} video · ${p.items.reduce((n,v)=>n+v.pdfs.length,0)} PDF · %${pct(p)} tamamlandı</small><div class="bar"><i style="width:${pct(p)}%"></i></div>${p.exp?'<span class="kl lo">Süresi doldu</span>':p.bitis?`<span class="kl ${p.kalan<=7?'lo':''}">${p.kalan} gün kaldı</span>`:''}</div><span class="chev"><span>${p.id===cur?'Kapat':'İçeriği aç'}</span><i>▾</i></span></div></button>${p.id===cur?panel(p):''}</div>`).join('');
   document.querySelectorAll('.pkc').forEach(b=>b.onclick=()=>{if(cur===b.dataset.id){cur=null;sel=null;save();draw()}else openPk(b.dataset.id)});
   const p=pkgs.find(x=>x.id===cur);if(!p)return;
